@@ -11,6 +11,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Vector2 lastMovementDir;
 
     private CharacterController controller;
+    private PlayerCombat playerCombat;
     private PlayerInputs playerInputs;
 
     void Start()
@@ -19,6 +20,7 @@ public class PlayerMovement : MonoBehaviour
         playerInputs.Movement.Enable();
 
         controller = GetComponent<CharacterController>();
+        playerCombat = GetComponent<PlayerCombat>();
     }
 
     #region Getter / Setter
@@ -54,7 +56,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Movement(Vector2 movementInput)
     {
-        if (movementInput != Vector2.zero)
+        if (movementInput != Vector2.zero && !playerCombat.isDamaged)
         {
             controller.Move(movementInput * movementSpeed * Time.deltaTime);
             lastMovementDir = movementInput;

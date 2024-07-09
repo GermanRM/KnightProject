@@ -63,10 +63,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04b2185451e500c4cbd8ea515a8a8cfe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  comboTime: 0.25
-  comboCounter: 0
-  startCounter: 0
-  comboTimeCounter: 0
+  damage: 0
+  attackCooldown: 0.15
+  attackCooldownTimer: 0
+  health: 0
+  isDamaged: 0
+  damagedCooldown: 0.5
+  damagedCooldownTimer: 0
 --- !u!114 &986715554586339946
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -80,9 +83,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   throwDirection: {x: 0, y: 0}
-  throwForce: 5
+  throwForce: 10
+  throwPoint: {fileID: 6811694670592135084}
   rockPrefab: {fileID: 2394829253639842180, guid: a46a1a2c63b73f744974adc7dcf468e8, type: 3}
-  throwCooldown: 0
+  throwCooldown: 0.5
   throwTimer: 0
 --- !u!143 &1019739560296161625
 CharacterController:
@@ -132,7 +136,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 6811694670592135084}
   m_Father: {fileID: 1019739560296161624}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -223,3 +228,34 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &3555958343435406942
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6811694670592135084}
+  m_Layer: 0
+  m_Name: ThrowPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6811694670592135084
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3555958343435406942}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.043, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1019739560362129197}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

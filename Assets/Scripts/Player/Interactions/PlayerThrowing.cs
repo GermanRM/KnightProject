@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,6 +8,7 @@ public class PlayerThrowing : MonoBehaviour
     [Header("Throwing Properties")]
     [SerializeField] private Vector2 throwDirection;
     [SerializeField] private float throwForce;
+    [SerializeField] private Transform throwPoint;
     [SerializeField] private GameObject rockPrefab;
 
     [Header("Throwing Timer")]
@@ -16,6 +18,12 @@ public class PlayerThrowing : MonoBehaviour
     #region References
     private PlayerMovement playerMovement;
     private PlayerInputs playerInputs;
+    #endregion
+
+    #region Events
+
+    public static event Action OnPlayerThrow;
+
     #endregion
 
     void Start()
@@ -28,10 +36,31 @@ public class PlayerThrowing : MonoBehaviour
 
     void Update()
     {
+        ThrowCooldownManager();
+        Throw();
+    }
+
+    private void ThrowCooldownManager()
+    {
+        throwTimer -= Time.deltaTime;
+
+        if (throwTimer < 0)
+        {
+            throwTimer = 0;
+        }
+    }
+
+    private void Throw()
+    {
         if (playerInputs.Combat.Throw.WasPerformedThisFrame())
         {
-            GameObject go = Instantiate(rockPrefab, transform.position, Quaternion.identity);
+            if (throwTimer > 0) return; 
+
+            GameObject go = Instantiate(rockPrefab, throwPoint.position, Quaternion.identity);
             go.GetComponent<RockMovement>().Initialize(playerMovement.GetLastMovDir(), throwForce);
+
+            throwTimer = throwCooldown;
+            OnPlayerThrow?.Invoke();
         }
     }
 }
