@@ -47,6 +47,9 @@ public class PlayerAnimator : MonoBehaviour
     {
         if (movementInput.x > 0) spriteRenderer.flipX = false;
         else if (movementInput.x < 0) spriteRenderer.flipX = true;
+
+        if (movementInput != Vector2.zero) animator.SetBool("IsMoving", true);
+        else animator.SetBool("IsMoving", false);
     }
 
     #endregion

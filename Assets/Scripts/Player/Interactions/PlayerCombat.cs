@@ -10,6 +10,7 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private float damage;
     [SerializeField] private float attackCooldown;
     [SerializeField] private float attackCooldownTimer;
+    [SerializeField] private GameObject attackArea;
 
     [Header("Player Properties")]
     [SerializeField] private float health;
@@ -52,6 +53,8 @@ public class PlayerCombat : MonoBehaviour
             if (attackCooldownTimer > 0) return;
 
             attackCooldownTimer = attackCooldown;
+            attackArea.SetActive(true);
+            Invoke(nameof(DisableAttackArea), attackCooldown);
 
             OnPlayerAttack?.Invoke();
         }
@@ -89,5 +92,10 @@ public class PlayerCombat : MonoBehaviour
     public void HealPlayer(float heal)
     {
         health += heal;
+    }
+
+    private void DisableAttackArea()
+    {
+        attackArea.SetActive(false);
     }
 }
