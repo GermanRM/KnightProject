@@ -6,20 +6,25 @@ using UnityEngine.InputSystem.XR;
 
 public class PlayerCombat : MonoBehaviour
 {
-    [Header("Combo System Properties")]
-    [SerializeField] private float comboTime;
-    [SerializeField] private int comboCounter;
-    bool isAttacking;
+    [Header("Combat Properties")]
+    [SerializeField] private float damage;
+    [SerializeField] private float attackCooldown;
+    [SerializeField] private float attackCooldownTimer;
+    [SerializeField] private GameObject attackArea;
 
-    [Header("Combo System Counter")]
-    [SerializeField] private bool startCounter;
-    [SerializeField] private float comboTimeCounter;
+    [Header("Player Properties")]
+    [SerializeField] private float health;
+    public bool isDamaged;
+    [SerializeField] private float damagedCooldown;
+    [SerializeField] private float damagedCooldownTimer;
 
     private PlayerInputs playerInputs;
 
     #region Events
 
-    public static event Action<int> OnPlayerAttack;
+    public static event Action OnPlayerAttack;
+    public static event Action<float> OnPlayerDamaged;
+    public static event Action OnPlayerHealed;
 
     #endregion
 
@@ -28,57 +33,69 @@ public class PlayerCombat : MonoBehaviour
         playerInputs = new PlayerInputs();
         playerInputs.Combat.Enable();
 
-        comboTimeCounter = comboTime;
+        attackCooldownTimer = attackCooldown;
     }
     
     void Update()
     {
-        CounterManager();
+        AttackCooldown();
         Attack();
-    }
 
-    private void CounterManager()
-    {
-        if (startCounter)
-            comboTimeCounter -= Time.deltaTime;
+        DamageCooldown();
 
-        if (!isAttacking)
-            startCounter = false;
-
-        if (comboTimeCounter <= 0)
-        {
-            isAttacking = false;
-            startCounter = false;
-            comboCounter = 0;
-            comboTimeCounter = comboTime;
-        }
+        if (Input.GetKeyDown(KeyCode.R)) DamagePlayer(1);
     }
 
     private void Attack()
     {
         if (playerInputs.Combat.Attack.WasPerformedThisFrame())
         {
-            if (!isAttacking)
-            {
-                isAttacking = true;
-                startCounter = true;
+            if (attackCooldownTimer > 0) return;
 
-                comboCounter++;
-            }
-            else
-            {
-                if (comboCounter >= 4)
-                {
-                    comboCounter = 0;
-                }
-                else
-                {
-                    comboCounter++;
-                    comboTimeCounter = comboTime;
-                }
-            }
+            attackCooldownTimer = attackCooldown;
+            attackArea.SetActive(true);
+            Invoke(nameof(DisableAttackArea), attackCooldown);
 
-            OnPlayerAttack?.Invoke(comboCounter);
+            OnPlayerAttack?.Invoke();
         }
+    }
+
+    private void AttackCooldown()
+    {
+        attackCooldownTimer -= Time.deltaTime;
+
+        if (attackCooldownTimer <= 0)
+        {
+            attackCooldownTimer = 0;
+        }
+    }
+
+    private void DamageCooldown()
+    {
+        damagedCooldownTimer -= Time.deltaTime;
+
+        if (damagedCooldownTimer <= 0)
+        {
+            isDamaged = false;
+            damagedCooldownTimer = 0;
+        }
+    }
+
+    public void DamagePlayer(float damage)
+    {
+        health -= damage;
+        isDamaged = true;
+        damagedCooldownTimer = damagedCooldown;
+        OnPlayerDamaged?.Invoke(damage);
+    }
+
+    public void HealPlayer(float heal)
+    {
+        health += heal;
+    }
+
+    private void DisableAttackArea()
+    {
+        attackArea.SetActive(false);
     }
 }
