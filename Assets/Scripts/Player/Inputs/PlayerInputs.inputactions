@@ -105,17 +105,37 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "Throw",
+                    "type": "Value",
+                    "id": "6a723a58-eac2-4793-aa4b-082724ab7c58",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
                 {
                     "name": "",
                     "id": "5248c824-770b-48cf-ba21-1a056a07d797",
-                    "path": "<Keyboard>/z",
+                    "path": "<Keyboard>/x",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "Attack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "99b5747f-4a0a-4221-9615-ed8c615e2895",
+                    "path": "<Keyboard>/c",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Throw",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
