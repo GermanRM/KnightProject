@@ -20,6 +20,7 @@ public class PlayerCombat : MonoBehaviour
     [Header("Player Properties")]
     public float health;
     public bool isDamaged;
+    public bool isDead;
     [SerializeField] private float damagedCooldown;
     [SerializeField] private float damagedCooldownTimer;
 
@@ -61,8 +62,6 @@ public class PlayerCombat : MonoBehaviour
         Attack();
 
         DamageCooldown();
-
-        if (Input.GetKeyDown(KeyCode.R)) DamagePlayer(1);
     }
 
     #region Combat
@@ -71,7 +70,7 @@ public class PlayerCombat : MonoBehaviour
     {
         if (playerInputs.Combat.Attack.WasPerformedThisFrame())
         {
-            if (attackCooldownTimer > 0 || isDamaged) return;
+            if (attackCooldownTimer > 0 || isDamaged || isDead) return;
 
             attackCooldownTimer = attackCooldown;
             EnableAttackArea();
@@ -139,6 +138,9 @@ public class PlayerCombat : MonoBehaviour
         
         if (health <= 0)
         {
+            isDead = true;
+            GameManager.instance.startCountdown = false;
+            GameManager.instance.OnPlayerDeath();
             OnPlayerDeath?.Invoke();
         }
     }
