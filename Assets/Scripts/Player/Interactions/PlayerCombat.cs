@@ -8,9 +8,14 @@ public class PlayerCombat : MonoBehaviour
 {
     [Header("Combat Properties")]
     [SerializeField] private float damage;
+    [SerializeField] private float attackKnockback;
     [SerializeField] private float attackCooldown;
     [SerializeField] private float attackCooldownTimer;
-    [SerializeField] private GameObject attackArea;
+
+    [Header("Attack Hitbox")]
+    [SerializeField] private Transform attackArea;
+    [SerializeField] private Vector2 attackAreaSize;
+    [SerializeField] private LayerMask enemyHitboxMask;
 
     [Header("Player Properties")]
     [SerializeField] private float health;
@@ -19,6 +24,7 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private float damagedCooldownTimer;
 
     private PlayerInputs playerInputs;
+    private PlayerMovement playerMovement;
 
     #region Events
 
@@ -26,16 +32,29 @@ public class PlayerCombat : MonoBehaviour
     public static event Action<float> OnPlayerDamaged;
     public static event Action OnPlayerHealed;
 
+    public static event Action OnPlayerDeath;
+
     #endregion
 
     void Start()
     {
         playerInputs = new PlayerInputs();
         playerInputs.Combat.Enable();
+        playerMovement = GetComponent<PlayerMovement>();
 
         attackCooldownTimer = attackCooldown;
     }
-    
+
+    private void OnEnable()
+    {
+        OnPlayerDamaged += OnPlayerGetDamaged;
+    }
+
+    private void OnDisable()
+    {
+        OnPlayerDamaged -= OnPlayerGetDamaged;
+    }
+
     void Update()
     {
         AttackCooldown();
@@ -46,15 +65,16 @@ public class PlayerCombat : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.R)) DamagePlayer(1);
     }
 
+    #region Combat
+
     private void Attack()
     {
         if (playerInputs.Combat.Attack.WasPerformedThisFrame())
         {
-            if (attackCooldownTimer > 0) return;
+            if (attackCooldownTimer > 0 || isDamaged) return;
 
             attackCooldownTimer = attackCooldown;
-            attackArea.SetActive(true);
-            Invoke(nameof(DisableAttackArea), attackCooldown);
+            EnableAttackArea();
 
             OnPlayerAttack?.Invoke();
         }
@@ -94,8 +114,43 @@ public class PlayerCombat : MonoBehaviour
         health += heal;
     }
 
-    private void DisableAttackArea()
+    private void EnableAttackArea()
     {
-        attackArea.SetActive(false);
+        RaycastHit2D hit = Physics2D.BoxCast(attackArea.position, attackAreaSize, 0, Vector2.zero, 0, enemyHitboxMask);
+
+        if (hit.collider != null)
+        {
+            Enemy enemy = hit.collider.GetComponent<Enemy>();
+
+            if (!enemy.isHitted)
+            {
+                Vector2 force = playerMovement.GetLastMovDir() * attackKnockback;
+                enemy.HurtEnemy(damage, force);
+            }
+        }
     }
+
+    #endregion
+
+    #region Interactions
+
+    private void OnPlayerGetDamaged(float damage)
+    {
+        
+        if (health <= 0)
+        {
+            OnPlayerDeath?.Invoke();
+        }
+    }
+
+    #endregion
+
+    #region Debug
+    private void OnDrawGizmos()
+    {
+        //Gizmos.color = isGrounded ? Color.green : Color.red;
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(attackArea.position, attackAreaSize); //Draw box check
+    }
+    #endregion
 }

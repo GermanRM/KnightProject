@@ -8,12 +8,13 @@ public class PlayerThrowing : MonoBehaviour
     [Header("Throwing Properties")]
     [SerializeField] private Vector2 throwDirection;
     [SerializeField] private float throwForce;
+    [SerializeField] private float throwKnockback;
     [SerializeField] private Transform throwPoint;
     [SerializeField] private GameObject rockPrefab;
 
     [Header("Throwing Timer")]
     [SerializeField] private float throwCooldown;
-    [SerializeField] private float throwTimer;
+    [SerializeField] private bool canThrow = true;
 
     #region References
     private PlayerMovement playerMovement;
@@ -36,31 +37,30 @@ public class PlayerThrowing : MonoBehaviour
 
     void Update()
     {
-        ThrowCooldownManager();
         Throw();
-    }
-
-    private void ThrowCooldownManager()
-    {
-        throwTimer -= Time.deltaTime;
-
-        if (throwTimer < 0)
-        {
-            throwTimer = 0;
-        }
     }
 
     private void Throw()
     {
         if (playerInputs.Combat.Throw.WasPerformedThisFrame())
         {
-            if (throwTimer > 0) return; 
+            if (!canThrow) return; 
 
             GameObject go = Instantiate(rockPrefab, throwPoint.position, Quaternion.identity);
-            go.GetComponent<RockMovement>().Initialize(playerMovement.GetLastMovDir(), throwForce);
+            go.GetComponent<RockMovement>().Initialize(playerMovement.GetLastMovDir(), throwForce, throwKnockback);
 
-            throwTimer = throwCooldown;
+            StartCoroutine(ThrowCooldown());
+
             OnPlayerThrow?.Invoke();
         }
+    }
+
+    private IEnumerator ThrowCooldown()
+    {
+        canThrow = false;
+
+        yield return new WaitForSeconds(throwCooldown);
+
+        canThrow = true;
     }
 }
