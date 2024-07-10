@@ -96,7 +96,7 @@ MonoBehaviour:
   throwPoint: {fileID: 6811694670592135084}
   rockPrefab: {fileID: 2394829253639842180, guid: a46a1a2c63b73f744974adc7dcf468e8, type: 3}
   throwCooldown: 0.6
-  throwTimer: 0
+  canThrow: 1
 --- !u!50 &1087809792
 Rigidbody2D:
   serializedVersion: 4
@@ -156,7 +156,8 @@ GameObject:
   - component: {fileID: 4371883953320513105}
   - component: {fileID: 7281372124976786773}
   - component: {fileID: 1019739560362129202}
-  m_Layer: 0
+  - component: {fileID: 2054761821}
+  m_Layer: 6
   m_Name: PlayerModel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -254,7 +255,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 4
   m_Sprite: {fileID: 2118605452, guid: e5b397e2806270a458030e459e2e22b6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -266,6 +267,32 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!61 &2054761821
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1019739560362129196}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 0.75, y: 1}
+    newSize: {x: 0.12, y: 0.16}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 0.75, y: 1}
+  m_EdgeRadius: 0
 --- !u!1 &1705978661393535187
 GameObject:
   m_ObjectHideFlags: 0
@@ -306,7 +333,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6811694670592135084}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: ThrowPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}

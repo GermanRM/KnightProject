@@ -5,22 +5,48 @@ using UnityEngine;
 
 public class EnemyAnimator : MonoBehaviour
 {
-
+    [Header("Visual References")]
     private SpriteRenderer spriteRenderer;
+
+    [Header("Animator References")]
+    private Animator animator;
+    [SerializeField] string EnemyAttackTrigger;
 
     private Enemy enemy;
 
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+        animator = GetComponent<Animator>();
         enemy = GetComponentInParent<Enemy>();
+
+        enemy.OnEnemyHitted += OnGetHitted;
+        enemy.OnEnemyEndHitted += OnEndHitted;
+
+        enemy.OnEnemyAttack += OnAttack;
+    }
+
+    private void OnDisable()
+    {
+        enemy.OnEnemyHitted -= OnGetHitted;
+        enemy.OnEnemyEndHitted -= OnEndHitted;
+
+        enemy.OnEnemyAttack -= OnAttack;
     }
 
     // Update is called once per frame
     void Update()
     {
+        EnemyMovement();
         EnemyFlip(enemy.target);
-        EnemyHittedAnim();
+    }
+
+    #region Movement
+
+    private void EnemyMovement()
+    {
+        if (enemy.agent.velocity.magnitude > 0.1f) animator.SetBool("IsMoving", true);
+        else animator.SetBool("IsMoving", false);
     }
 
     private void EnemyFlip(Transform target)
@@ -48,24 +74,28 @@ public class EnemyAnimator : MonoBehaviour
         }
     }
 
-    private void EnemyHittedAnim()
+    #endregion
+
+    #region Enemy Hitted
+
+    private void OnGetHitted()
     {
-        if (enemy.isHitted)
-        {
-            if (UnityEngine.ColorUtility.TryParseHtmlString("#FF4545", out Color newColor))
-            {            
-                // Si la conversión fue exitosa, asignar el color al SpriteRenderer
-                spriteRenderer.color = newColor;
-            }
-        }
-        else
-        {
-            if (UnityEngine.ColorUtility.TryParseHtmlString("#FFFFFF", out Color newColor))
-            {
-                
-                // Si la conversión fue exitosa, asignar el color al SpriteRenderer
-                spriteRenderer.color = newColor;
-            }
-        }
+        animator.SetTrigger("HurtTrigger");
     }
+
+    private void OnEndHitted()
+    {
+        animator.SetTrigger("StopHurtTrigger");
+    }
+
+    #endregion
+
+    #region Enemy Combat
+
+    private void OnAttack()
+    {
+        animator.SetTrigger(EnemyAttackTrigger);
+    }
+
+    #endregion
 }

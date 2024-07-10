@@ -71,7 +71,7 @@ public class PlayerCombat : MonoBehaviour
     {
         if (playerInputs.Combat.Attack.WasPerformedThisFrame())
         {
-            if (attackCooldownTimer > 0) return;
+            if (attackCooldownTimer > 0 || isDamaged) return;
 
             attackCooldownTimer = attackCooldown;
             EnableAttackArea();
