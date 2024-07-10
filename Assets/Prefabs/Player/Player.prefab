@@ -695,7 +695,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 448e49bb26c31d147adc4d401b5e4c24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movementSpeed: 5
+  movementSpeed: 2
   movementInput: {x: 0, y: 0}
   lastMovementDir: {x: 0, y: 0}
 --- !u!114 &1019739560296161630
@@ -710,7 +710,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04b2185451e500c4cbd8ea515a8a8cfe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 0
+  damage: 1
   attackKnockback: 2
   attackCooldown: 0.15
   attackCooldownTimer: 0
@@ -719,7 +719,7 @@ MonoBehaviour:
   enemyHitboxMask:
     serializedVersion: 2
     m_Bits: 8
-  health: 0
+  health: 5
   isDamaged: 0
   damagedCooldown: 0.5
   damagedCooldownTimer: 0
@@ -1595,7 +1595,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 20
+  m_text: 20,4324324423
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a36a7ede9e2a4764e91f3949b25301a6, type: 2}
   m_sharedMaterial: {fileID: 1474194189098350112, guid: a36a7ede9e2a4764e91f3949b25301a6, type: 2}
@@ -1622,7 +1622,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 38.05
+  m_fontSize: 18
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1638,7 +1638,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_enableWordWrapping: 1
+  m_enableWordWrapping: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}

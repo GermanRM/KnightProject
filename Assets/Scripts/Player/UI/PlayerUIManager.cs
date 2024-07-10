@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -40,10 +41,10 @@ public class PlayerUIManager : MonoBehaviour
     void Update()
     {
         healthText.text = playerCombat.health.ToString();
-        //timeText.text = 
-        //killsText.text = 
-        damageText.text = playerCombat.damage.ToString();
-        speedText.text = playerMovement.movementSpeed.ToString();
+        timeText.text = $"{(int)GameManager.instance.timeTimer}";
+        killsText.text = GameManager.instance.killCounter.ToString();
+        damageText.text = String.Format("{0:0.0}", playerCombat.damage);
+        speedText.text = String.Format("{0:0.0}", playerMovement.movementSpeed);
         rocksText.text = playerThrowing.rocksCount.ToString();
     }
 }
