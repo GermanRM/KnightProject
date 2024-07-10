@@ -6,6 +6,7 @@ using UnityEngine;
 public class PlayerThrowing : MonoBehaviour
 {
     [Header("Throwing Properties")]
+    public int rocksCount;
     [SerializeField] private Vector2 throwDirection;
     [SerializeField] private float throwForce;
     [SerializeField] private float throwKnockback;
@@ -44,11 +45,12 @@ public class PlayerThrowing : MonoBehaviour
     {
         if (playerInputs.Combat.Throw.WasPerformedThisFrame())
         {
-            if (!canThrow) return; 
+            if (!canThrow || rocksCount <= 0) return; 
 
             GameObject go = Instantiate(rockPrefab, throwPoint.position, Quaternion.identity);
             go.GetComponent<RockMovement>().Initialize(playerMovement.GetLastMovDir(), throwForce, throwKnockback);
 
+            rocksCount--;
             StartCoroutine(ThrowCooldown());
 
             OnPlayerThrow?.Invoke();

@@ -7,7 +7,7 @@ using UnityEngine.InputSystem.XR;
 public class PlayerCombat : MonoBehaviour
 {
     [Header("Combat Properties")]
-    [SerializeField] private float damage;
+    public float damage;
     [SerializeField] private float attackKnockback;
     [SerializeField] private float attackCooldown;
     [SerializeField] private float attackCooldownTimer;
@@ -18,7 +18,7 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private LayerMask enemyHitboxMask;
 
     [Header("Player Properties")]
-    [SerializeField] private float health;
+    public float health;
     public bool isDamaged;
     [SerializeField] private float damagedCooldown;
     [SerializeField] private float damagedCooldownTimer;
