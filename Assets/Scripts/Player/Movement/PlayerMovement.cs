@@ -6,7 +6,7 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement Properties")]
-    [SerializeField] private float movementSpeed;
+    public float movementSpeed;
     [SerializeField] private Vector2 movementInput;
     [SerializeField] private Vector2 lastMovementDir;
     private Vector2 moveDirection;
