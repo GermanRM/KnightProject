@@ -42,6 +42,7 @@ public class Enemy : MonoBehaviour
     public event Action OnEnemyEndHitted;
 
     public event Action OnEnemyAttack;
+    public event Action OnEnemyDeath;
     #endregion
 
     void Start()
@@ -58,11 +59,13 @@ public class Enemy : MonoBehaviour
     private void OnEnable()
     {
         OnEnemyHitted += OnEnemyGetHitted;
+        OnEnemyEndHitted += OnEnemyFinishHitted;
     }
 
     private void OnDisable()
     {
         OnEnemyHitted -= OnEnemyGetHitted;
+        OnEnemyEndHitted -= OnEnemyFinishHitted;
     }
 
     private void InitializeNavAgent()
@@ -138,7 +141,7 @@ public class Enemy : MonoBehaviour
 
     private void OnEnemyGetHitted()
     {
-        StartCoroutine(PlayerHittedCooldown());        
+        StartCoroutine(PlayerHittedCooldown());
     }
 
     private IEnumerator PlayerHittedCooldown()
@@ -166,6 +169,17 @@ public class Enemy : MonoBehaviour
         rb.velocity = Vector2.zero;
         rb.isKinematic = true; // Hacer el Rigidbody cinemático nuevamente
         agent.enabled = true; // Rehabilitar el NavMeshAgent
+    }
+
+    private void OnEnemyFinishHitted()
+    {
+        if (enemyHealth <= 0)
+        {
+            GameManager.instance.killCounter++;
+            GameManager.instance.player.GetComponent<PlayerCombat>().damage = GameManager.instance.player.GetComponent<PlayerCombat>().damage + 0.2f;
+            GameManager.instance.player.GetComponent<PlayerMovement>().movementSpeed = GameManager.instance.player.GetComponent<PlayerMovement>().movementSpeed + 0.2f;
+            Destroy(gameObject);
+        }
     }
 
     #endregion

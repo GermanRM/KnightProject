@@ -151,11 +151,14 @@ MonoBehaviour:
   attackSpeed: 0
   enemyHealth: 4
   hittedCooldown: 1
+  delayFirstHit: 0
   isHitted: 0
+  combatBox: {fileID: 0}
   combatBoxSize: {x: 0, y: 0}
   playerHitboxLayer:
     serializedVersion: 2
     m_Bits: 64
+  flipCombatBoxPos: 0
   movementSpeed: 4
   hasArrived: 0
   target: {fileID: 0}
@@ -206,7 +209,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 45988545995647180}
-  m_BodyType: 1
+  m_BodyType: 0
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
