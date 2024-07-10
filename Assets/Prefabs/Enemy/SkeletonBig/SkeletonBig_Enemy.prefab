@@ -169,11 +169,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2503c4f7d64d35443869d5d42138af27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 3
+  damage: 2
   firstHitSpeed: 1.5
-  attackSpeed: 1.5
+  attackSpeed: 2
   enemyHealth: 4
-  hittedCooldown: 0.5
+  hittedCooldown: 1
   delayFirstHit: 0
   isHitted: 0
   combatBox: {fileID: 7754351435139237055}
@@ -236,7 +236,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
+  m_Mass: 3
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 0

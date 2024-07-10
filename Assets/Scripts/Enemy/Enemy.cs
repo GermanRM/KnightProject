@@ -8,14 +8,14 @@ using UnityEngine.AI;
 public class Enemy : MonoBehaviour
 {
     [Header("Enemy Combat Properties")]
-    [SerializeField] private float damage;
+    public float damage;
     [SerializeField] private float firstHitSpeed;
     [SerializeField] private float attackSpeed;
-    [SerializeField] private float enemyHealth;
+    public float enemyHealth;
     [SerializeField] private float hittedCooldown;
     [SerializeField] private bool delayFirstHit;
     public bool isHitted;
-    bool canAttack = true;
+    [SerializeField] private bool canAttack = true;
 
     [Header("Enemy CombatBox Properties")]
     [SerializeField] private Transform combatBox;
@@ -25,7 +25,7 @@ public class Enemy : MonoBehaviour
     Vector3 combatBoxInitialPos;
 
     [Header("Enemy Movement Properties")]
-    [SerializeField] private float movementSpeed;
+    public float movementSpeed;
     [SerializeField] bool hasArrived;
     private bool applyKB;
     private Vector2 kbForce;
@@ -102,8 +102,11 @@ public class Enemy : MonoBehaviour
 
     private void FollowPlayer()
     {
-        if (!isHitted)
-            agent.SetDestination(target.position);
+        if (!target.gameObject.GetComponent<PlayerCombat>().isDead)
+        {
+            if (!isHitted)
+                agent.SetDestination(target.position);
+        }
     }
 
     private void DetectIfArrived()
@@ -147,6 +150,7 @@ public class Enemy : MonoBehaviour
     private IEnumerator PlayerHittedCooldown()
     {
         isHitted = true;
+        canAttack = false;
         yield return new WaitForSeconds(hittedCooldown);
         isHitted = false;
         OnEnemyEndHitted?.Invoke();
@@ -176,8 +180,8 @@ public class Enemy : MonoBehaviour
         if (enemyHealth <= 0)
         {
             GameManager.instance.killCounter++;
-            GameManager.instance.player.GetComponent<PlayerCombat>().damage = GameManager.instance.player.GetComponent<PlayerCombat>().damage + 0.2f;
-            GameManager.instance.player.GetComponent<PlayerMovement>().movementSpeed = GameManager.instance.player.GetComponent<PlayerMovement>().movementSpeed + 0.2f;
+            GameManager.instance.playerReference.GetComponent<PlayerCombat>().damage = GameManager.instance.playerReference.GetComponent<PlayerCombat>().damage + 0.2f;
+            GameManager.instance.playerReference.GetComponent<PlayerMovement>().movementSpeed = GameManager.instance.playerReference.GetComponent<PlayerMovement>().movementSpeed + 0.2f;
             Destroy(gameObject);
         }
     }
@@ -188,8 +192,12 @@ public class Enemy : MonoBehaviour
 
     private void Attack()
     {
-        if (hasArrived && canAttack && !isHitted)
+        if (target.gameObject.GetComponent<PlayerCombat>().isDead) return;
+
+        if (hasArrived && canAttack)
         {
+            if (isHitted) return;
+
             if (delayFirstHit)
                 StartAttackDelayed();
             else

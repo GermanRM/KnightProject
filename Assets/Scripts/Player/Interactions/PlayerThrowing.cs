@@ -19,6 +19,7 @@ public class PlayerThrowing : MonoBehaviour
 
     #region References
     private PlayerMovement playerMovement;
+    private PlayerCombat playerCombat;
     private PlayerInputs playerInputs;
     #endregion
 
@@ -34,6 +35,7 @@ public class PlayerThrowing : MonoBehaviour
         playerInputs.Combat.Enable();
 
         playerMovement = GetComponent<PlayerMovement>();
+        playerCombat = GetComponent<PlayerCombat>();
     }
 
     void Update()
@@ -45,10 +47,14 @@ public class PlayerThrowing : MonoBehaviour
     {
         if (playerInputs.Combat.Throw.WasPerformedThisFrame())
         {
-            if (!canThrow || rocksCount <= 0) return; 
+            if (!canThrow || rocksCount <= 0 || playerCombat.isDead) return; 
 
             GameObject go = Instantiate(rockPrefab, throwPoint.position, Quaternion.identity);
-            go.GetComponent<RockMovement>().Initialize(playerMovement.GetLastMovDir(), throwForce, throwKnockback);
+
+            if (playerMovement.GetLastMovDir() == Vector2.zero)
+                go.GetComponent<RockMovement>().Initialize(Vector2.right, throwForce, throwKnockback);
+            else
+                go.GetComponent<RockMovement>().Initialize(playerMovement.GetLastMovDir(), throwForce, throwKnockback);
 
             rocksCount--;
             StartCoroutine(ThrowCooldown());

@@ -52,7 +52,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void CheckInput()
     {
-       movementInput = playerInputs.Movement.Movement.ReadValue<Vector2>().normalized;
+        if (playerCombat.isDead) return;
+
+        movementInput = playerInputs.Movement.Movement.ReadValue<Vector2>().normalized;
     }
 
     #endregion

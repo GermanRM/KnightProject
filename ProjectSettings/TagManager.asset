@@ -8,6 +8,9 @@ TagManager:
   - Wall
   - Trap
   - InitialSpawnPoint
+  - EnemySpawnPoint
+  - LayerCollider
+  - FinalBossSpawnPoint
   layers:
   - Default
   - TransparentFX
