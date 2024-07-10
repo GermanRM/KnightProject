@@ -724,6 +724,7 @@ MonoBehaviour:
   isDead: 0
   damagedCooldown: 0.5
   damagedCooldownTimer: 0
+  attackSound: {fileID: 8300000, guid: 365f8b62183ce4341b1ac36761754a65, type: 3}
 --- !u!114 &986715554586339946
 MonoBehaviour:
   m_ObjectHideFlags: 0
