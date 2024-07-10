@@ -25,7 +25,7 @@ public class MainMenu : MonoBehaviour
 
     public void LoadScene()
     {
-        SceneManager.LoadScene("GameScene");
+        SceneManager.LoadScene("German");
     }
 
     public void QuitGame()
