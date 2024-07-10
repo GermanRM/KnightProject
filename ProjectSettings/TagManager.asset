@@ -4,16 +4,15 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Wall
-  - Trap
+  - Enemy
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - EnemyHitbox
   - Water
   - UI
-  - 
+  - PlayerHitbox
   - 
   - 
   - 

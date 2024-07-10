@@ -6,20 +6,33 @@ using UnityEngine.InputSystem.XR;
 
 public class PlayerCombat : MonoBehaviour
 {
-    [Header("Combo System Properties")]
-    [SerializeField] private float comboTime;
-    [SerializeField] private int comboCounter;
-    bool isAttacking;
+    [Header("Combat Properties")]
+    [SerializeField] private float damage;
+    [SerializeField] private float attackKnockback;
+    [SerializeField] private float attackCooldown;
+    [SerializeField] private float attackCooldownTimer;
 
-    [Header("Combo System Counter")]
-    [SerializeField] private bool startCounter;
-    [SerializeField] private float comboTimeCounter;
+    [Header("Attack Hitbox")]
+    [SerializeField] private Transform attackArea;
+    [SerializeField] private Vector2 attackAreaSize;
+    [SerializeField] private LayerMask enemyHitboxMask;
+
+    [Header("Player Properties")]
+    [SerializeField] private float health;
+    public bool isDamaged;
+    [SerializeField] private float damagedCooldown;
+    [SerializeField] private float damagedCooldownTimer;
 
     private PlayerInputs playerInputs;
+    private PlayerMovement playerMovement;
 
     #region Events
 
-    public static event Action<int> OnPlayerAttack;
+    public static event Action OnPlayerAttack;
+    public static event Action<float> OnPlayerDamaged;
+    public static event Action OnPlayerHealed;
+
+    public static event Action OnPlayerDeath;
 
     #endregion
 
@@ -27,58 +40,117 @@ public class PlayerCombat : MonoBehaviour
     {
         playerInputs = new PlayerInputs();
         playerInputs.Combat.Enable();
+        playerMovement = GetComponent<PlayerMovement>();
 
-        comboTimeCounter = comboTime;
+        attackCooldownTimer = attackCooldown;
     }
-    
+
+    private void OnEnable()
+    {
+        OnPlayerDamaged += OnPlayerGetDamaged;
+    }
+
+    private void OnDisable()
+    {
+        OnPlayerDamaged -= OnPlayerGetDamaged;
+    }
+
     void Update()
     {
-        CounterManager();
+        AttackCooldown();
         Attack();
+
+        DamageCooldown();
+
+        if (Input.GetKeyDown(KeyCode.R)) DamagePlayer(1);
     }
 
-    private void CounterManager()
-    {
-        if (startCounter)
-            comboTimeCounter -= Time.deltaTime;
-
-        if (!isAttacking)
-            startCounter = false;
-
-        if (comboTimeCounter <= 0)
-        {
-            isAttacking = false;
-            startCounter = false;
-            comboCounter = 0;
-            comboTimeCounter = comboTime;
-        }
-    }
+    #region Combat
 
     private void Attack()
     {
         if (playerInputs.Combat.Attack.WasPerformedThisFrame())
         {
-            if (!isAttacking)
-            {
-                isAttacking = true;
-                startCounter = true;
+            if (attackCooldownTimer > 0 || isDamaged) return;
 
-                comboCounter++;
-            }
-            else
-            {
-                if (comboCounter >= 4)
-                {
-                    comboCounter = 0;
-                }
-                else
-                {
-                    comboCounter++;
-                    comboTimeCounter = comboTime;
-                }
-            }
+            attackCooldownTimer = attackCooldown;
+            EnableAttackArea();
 
-            OnPlayerAttack?.Invoke(comboCounter);
+            OnPlayerAttack?.Invoke();
         }
     }
+
+    private void AttackCooldown()
+    {
+        attackCooldownTimer -= Time.deltaTime;
+
+        if (attackCooldownTimer <= 0)
+        {
+            attackCooldownTimer = 0;
+        }
+    }
+
+    private void DamageCooldown()
+    {
+        damagedCooldownTimer -= Time.deltaTime;
+
+        if (damagedCooldownTimer <= 0)
+        {
+            isDamaged = false;
+            damagedCooldownTimer = 0;
+        }
+    }
+
+    public void DamagePlayer(float damage)
+    {
+        health -= damage;
+        isDamaged = true;
+        damagedCooldownTimer = damagedCooldown;
+        OnPlayerDamaged?.Invoke(damage);
+    }
+
+    public void HealPlayer(float heal)
+    {
+        health += heal;
+    }
+
+    private void EnableAttackArea()
+    {
+        RaycastHit2D hit = Physics2D.BoxCast(attackArea.position, attackAreaSize, 0, Vector2.zero, 0, enemyHitboxMask);
+
+        if (hit.collider != null)
+        {
+            Enemy enemy = hit.collider.GetComponent<Enemy>();
+
+            if (!enemy.isHitted)
+            {
+                Vector2 force = playerMovement.GetLastMovDir() * attackKnockback;
+                enemy.HurtEnemy(damage, force);
+            }
+        }
+    }
+
+    #endregion
+
+    #region Interactions
+
+    private void OnPlayerGetDamaged(float damage)
+    {
+        
+        if (health <= 0)
+        {
+            OnPlayerDeath?.Invoke();
+        }
+    }
+
+    #endregion
+
+    #region Debug
+    private void OnDrawGizmos()
+    {
+        //Gizmos.color = isGrounded ? Color.green : Color.red;
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(attackArea.position, attackAreaSize); //Draw box check
+    }
+    #endregion
 }
