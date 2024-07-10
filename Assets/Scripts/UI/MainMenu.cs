@@ -23,7 +23,7 @@ public class MainMenu : MonoBehaviour
         settingsUI.SetActive(true);
     }
 
-    public void StartGame()
+    public void LoadScene()
     {
         SceneManager.LoadScene("GameScene");
     }
