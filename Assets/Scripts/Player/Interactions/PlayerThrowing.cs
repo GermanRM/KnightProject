@@ -8,6 +8,7 @@ public class PlayerThrowing : MonoBehaviour
     [Header("Throwing Properties")]
     [SerializeField] private Vector2 throwDirection;
     [SerializeField] private float throwForce;
+    [SerializeField] private float throwKnockback;
     [SerializeField] private Transform throwPoint;
     [SerializeField] private GameObject rockPrefab;
 
@@ -57,7 +58,7 @@ public class PlayerThrowing : MonoBehaviour
             if (throwTimer > 0) return; 
 
             GameObject go = Instantiate(rockPrefab, throwPoint.position, Quaternion.identity);
-            go.GetComponent<RockMovement>().Initialize(playerMovement.GetLastMovDir(), throwForce);
+            go.GetComponent<RockMovement>().Initialize(playerMovement.GetLastMovDir(), throwForce, throwKnockback);
 
             throwTimer = throwCooldown;
             OnPlayerThrow?.Invoke();

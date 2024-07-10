@@ -9,8 +9,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float movementSpeed;
     [SerializeField] private Vector2 movementInput;
     [SerializeField] private Vector2 lastMovementDir;
+    private Vector2 moveDirection;
 
-    private CharacterController controller;
+    private Rigidbody2D rb;
     private PlayerCombat playerCombat;
     private PlayerInputs playerInputs;
 
@@ -19,8 +20,8 @@ public class PlayerMovement : MonoBehaviour
         playerInputs = new PlayerInputs();
         playerInputs.Movement.Enable();
 
-        controller = GetComponent<CharacterController>();
-        playerCombat = GetComponent<PlayerCombat>();
+        rb = GetComponent<Rigidbody2D>();
+        playerCombat = GetComponentInChildren<PlayerCombat>();
     }
 
     #region Getter / Setter
@@ -39,7 +40,11 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {       
-        CheckInput();
+        CheckInput();       
+    }
+
+    private void FixedUpdate()
+    {
         Movement(movementInput);
     }
 
@@ -58,9 +63,10 @@ public class PlayerMovement : MonoBehaviour
     {
         if (movementInput != Vector2.zero && !playerCombat.isDamaged)
         {
-            controller.Move(movementInput * movementSpeed * Time.deltaTime);
+            rb.velocity = (movementInput * movementSpeed);
             lastMovementDir = movementInput;
         }
+        else rb.velocity = Vector2.zero;
     }
 
     #endregion
