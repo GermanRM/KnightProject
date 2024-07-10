@@ -25,6 +25,7 @@ public class PlayerAnimator : MonoBehaviour
     {
         PlayerCombat.OnPlayerAttack += OnPlayerCombo;
         PlayerCombat.OnPlayerDamaged += OnPlayerGetDamage;
+        PlayerCombat.OnPlayerDeath += OnPlayerDeathed;
         PlayerThrowing.OnPlayerThrow += OnPlayerThrowed;
     }
 
@@ -32,6 +33,7 @@ public class PlayerAnimator : MonoBehaviour
     {
         PlayerCombat.OnPlayerAttack -= OnPlayerCombo;
         PlayerCombat.OnPlayerDamaged -= OnPlayerGetDamage;
+        PlayerCombat.OnPlayerDeath -= OnPlayerDeathed;
         PlayerThrowing.OnPlayerThrow -= OnPlayerThrowed;
     }
 
@@ -69,6 +71,11 @@ public class PlayerAnimator : MonoBehaviour
     private void OnPlayerGetDamage(float damage)
     {
         animator.SetTrigger("HurtAnim");
+    }
+
+    private void OnPlayerDeathed()
+    {
+        animator.SetTrigger("DeathTrigger");
     }
 
     #endregion

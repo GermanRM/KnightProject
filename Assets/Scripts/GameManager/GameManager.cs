@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     [Header("Player Properties")]
-    public GameObject player;
+    public GameObject playerReference;
+    public GameObject playerPrefab;
 
     [Header("Spawn Properties")]
     [SerializeField] private Transform initialSpawnPoint;
@@ -14,18 +16,30 @@ public class GameManager : MonoBehaviour
     [Header("Enemies Spawn Properties")]
     public List<GameObject> weakEnemies;
     public List<GameObject> strongEnemies;
-    [SerializeField] private List<Transform> spawnPoints;
+    [SerializeField] private List<GameObject> spawnPoints;
     [SerializeField] private float spawnInterval = 5f; // Intervalo de tiempo para spawnear enemigos
     private float nextSpawnTime = 0f;
-
+    [SerializeField] private Transform finalBossSpawnPoint;
+    [SerializeField] private GameObject finalBossPrefab;
+    public bool finalBossSpawned = false;
 
     [Header("Kill Properties")]
     public int killCounter;
 
     [Header("Time Properties")]
     public float timeTimer;
-    [SerializeField] private bool startCountdown;
+    public bool startCountdown;
 
+    [Header("On Finish Properties")]
+    [SerializeField] private GameObject passGO;
+    [SerializeField] private GameObject doorColliderGO;
+
+    [Header("On Player Death Properties")]
+    [SerializeField] private GameObject gameOverCanvas;
+    [SerializeField] private GameObject winCanvas;
+    [SerializeField] private GameOverCanvas canvasScript;
+
+    [SerializeField] bool isLevelLoaded;
     public static GameManager instance;
 
     private void Awake()
@@ -55,7 +69,8 @@ public class GameManager : MonoBehaviour
     {
         if (scene.name == "GameLobby") return;
 
-        
+        InitializeLevel();
+        isLevelLoaded = true;
     }
 
     private void InitializeLevel()
@@ -64,13 +79,19 @@ public class GameManager : MonoBehaviour
         timeTimer = 60;
         startCountdown = true;
 
-        player = GameObject.FindGameObjectWithTag("Player");
+        spawnPoints = GameObject.FindGameObjectsWithTag("EnemySpawnPoint").ToList();
+        passGO = GameObject.FindGameObjectWithTag("LayerCollider").gameObject.GetComponent<LayerCollider>().passGO;
+        doorColliderGO = GameObject.FindGameObjectWithTag("LayerCollider").gameObject.GetComponent<LayerCollider>().doorColliderGO;
+        finalBossSpawnPoint = GameObject.FindGameObjectWithTag("FinalBossSpawnPoint").transform;
+
+        GameObject go = Instantiate(playerPrefab, initialSpawnPoint);
+        playerReference = go;
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        InitializeLevel();
+        
     }
 
     // Update is called once per frame
@@ -85,11 +106,46 @@ public class GameManager : MonoBehaviour
             EnemySpawner();
             nextSpawnTime = Time.time + spawnInterval;
         }
+
+        if (playerReference != null)
+        {
+            if (playerReference.transform.position.y >= 4.91f)
+            {
+                passGO.SetActive(true);
+                doorColliderGO.SetActive(true);
+
+                if (!finalBossSpawned)
+                {
+                    finalBossSpawned = true;
+                    GameObject go = Instantiate(finalBossPrefab, finalBossSpawnPoint);
+                    Enemy enemy = go.GetComponent<Enemy>();
+
+                    enemy.enemyHealth = 30;
+                    enemy.damage = playerReference.GetComponent<PlayerCombat>().damage;
+                    enemy.movementSpeed = playerReference.GetComponent<PlayerMovement>().movementSpeed;
+                }
+
+                Camera.main.transform.position = new Vector3(Camera.main.transform.position.x, 9.58f, Camera.main.transform.position.z);
+            }
+        }
     }
 
     private void StartTimer()
     {
         timeTimer -= Time.deltaTime;
+
+        if (timeTimer > 0) return;
+
+        if (timeTimer < 0)
+        {
+            timeTimer = 0;
+        }
+
+        if (isLevelLoaded)
+        {
+            passGO.SetActive(false);
+            doorColliderGO.SetActive(false);
+        }
     }
 
     private void EnemySpawner()
@@ -144,9 +200,21 @@ public class GameManager : MonoBehaviour
         GameObject randomEnemyPrefab = enemyList[Random.Range(0, enemyList.Count)];
 
         // Seleccionar un punto de aparición aleatorio
-        Transform randomSpawnPoint = spawnPoints[Random.Range(0, spawnPoints.Count)];
+        Transform randomSpawnPoint = spawnPoints[Random.Range(0, spawnPoints.Count)].transform;
 
         // Instanciar el enemigo en el punto de aparición seleccionado
         Instantiate(randomEnemyPrefab, randomSpawnPoint.position, randomSpawnPoint.rotation);
+    }
+
+    public void OnPlayerDeath()
+    {
+        canvasScript.OnPlayerDeath();
+        gameOverCanvas.SetActive(true);
+    }
+
+    public void OnGameWin()
+    {       
+        canvasScript.OnPlayerWin();
+        winCanvas.SetActive(true);
     }
 }
