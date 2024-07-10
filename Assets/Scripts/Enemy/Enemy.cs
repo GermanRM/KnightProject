@@ -16,6 +16,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] private bool delayFirstHit;
     public bool isHitted;
     [SerializeField] private bool canAttack = true;
+    [SerializeField] bool isFinalBoss;
 
     [Header("Enemy CombatBox Properties")]
     [SerializeField] private Transform combatBox;
@@ -30,12 +31,14 @@ public class Enemy : MonoBehaviour
     private bool applyKB;
     private Vector2 kbForce;
     private Rigidbody2D rb;
+    bool stopFollow = false;
 
     [Header("NavMesh Properties")]
     public Transform target;
     public NavMeshAgent agent;
 
     private SpriteRenderer spriteRenderer;
+    [SerializeField] Animator animator;
 
     #region Events
     public event Action OnEnemyHitted;
@@ -102,7 +105,7 @@ public class Enemy : MonoBehaviour
 
     private void FollowPlayer()
     {
-        if (!target.gameObject.GetComponent<PlayerCombat>().isDead)
+        if (!target.gameObject.GetComponent<PlayerCombat>().isDead || stopFollow)
         {
             if (!isHitted)
                 agent.SetDestination(target.position);
@@ -179,10 +182,22 @@ public class Enemy : MonoBehaviour
     {
         if (enemyHealth <= 0)
         {
-            GameManager.instance.killCounter++;
-            GameManager.instance.playerReference.GetComponent<PlayerCombat>().damage = GameManager.instance.playerReference.GetComponent<PlayerCombat>().damage + 0.2f;
-            GameManager.instance.playerReference.GetComponent<PlayerMovement>().movementSpeed = GameManager.instance.playerReference.GetComponent<PlayerMovement>().movementSpeed + 0.2f;
-            Destroy(gameObject);
+            if (!isFinalBoss)
+            {
+                GameManager.instance.killCounter++;
+                GameManager.instance.playerReference.GetComponent<PlayerCombat>().damage = GameManager.instance.playerReference.GetComponent<PlayerCombat>().damage + 0.2f;
+                GameManager.instance.playerReference.GetComponent<PlayerMovement>().movementSpeed = GameManager.instance.playerReference.GetComponent<PlayerMovement>().movementSpeed + 0.2f;
+                Destroy(gameObject);
+            }
+            else
+            {
+                GameManager.instance.killCounter++;
+                GameManager.instance.playerReference.GetComponent<PlayerCombat>().damage = GameManager.instance.playerReference.GetComponent<PlayerCombat>().damage + 0.2f;
+                GameManager.instance.playerReference.GetComponent<PlayerMovement>().movementSpeed = GameManager.instance.playerReference.GetComponent<PlayerMovement>().movementSpeed + 0.2f;
+                stopFollow = true;
+                animator.SetTrigger("DeathTrigger");
+                GameManager.instance.OnGameWin();
+            }
         }
     }
 

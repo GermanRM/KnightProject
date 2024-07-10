@@ -47,7 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lifeTime: 5
   lifeTimeCounter: 0
-  damage: 5
+  damage: 2
   rockKnockback: 2
   moveDirection: {x: 0, y: 0}
   moveSpeed: 0

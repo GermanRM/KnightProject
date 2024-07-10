@@ -21,7 +21,7 @@ public class GameManager : MonoBehaviour
     private float nextSpawnTime = 0f;
     [SerializeField] private Transform finalBossSpawnPoint;
     [SerializeField] private GameObject finalBossPrefab;
-    bool finalBossSpawned = false;
+    public bool finalBossSpawned = false;
 
     [Header("Kill Properties")]
     public int killCounter;
@@ -36,6 +36,8 @@ public class GameManager : MonoBehaviour
 
     [Header("On Player Death Properties")]
     [SerializeField] private GameObject gameOverCanvas;
+    [SerializeField] private GameObject winCanvas;
+    [SerializeField] private GameOverCanvas canvasScript;
 
     [SerializeField] bool isLevelLoaded;
     public static GameManager instance;
@@ -118,7 +120,7 @@ public class GameManager : MonoBehaviour
                     GameObject go = Instantiate(finalBossPrefab, finalBossSpawnPoint);
                     Enemy enemy = go.GetComponent<Enemy>();
 
-                    enemy.enemyHealth = playerReference.GetComponent<PlayerCombat>().health;
+                    enemy.enemyHealth = 30;
                     enemy.damage = playerReference.GetComponent<PlayerCombat>().damage;
                     enemy.movementSpeed = playerReference.GetComponent<PlayerMovement>().movementSpeed;
                 }
@@ -139,8 +141,11 @@ public class GameManager : MonoBehaviour
             timeTimer = 0;
         }
 
-        passGO.SetActive(false);
-        doorColliderGO.SetActive(false);
+        if (isLevelLoaded)
+        {
+            passGO.SetActive(false);
+            doorColliderGO.SetActive(false);
+        }
     }
 
     private void EnemySpawner()
@@ -203,6 +208,13 @@ public class GameManager : MonoBehaviour
 
     public void OnPlayerDeath()
     {
+        canvasScript.OnPlayerDeath();
         gameOverCanvas.SetActive(true);
+    }
+
+    public void OnGameWin()
+    {       
+        canvasScript.OnPlayerWin();
+        winCanvas.SetActive(true);
     }
 }
