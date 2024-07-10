@@ -35,6 +35,9 @@ public class PlayerCombat : MonoBehaviour
 
     public static event Action OnPlayerDeath;
 
+    //private AudioSource playerAudio;
+    //[SerializeField] private AudioClip attackSound;
+
     #endregion
 
     void Start()
@@ -71,7 +74,8 @@ public class PlayerCombat : MonoBehaviour
         if (playerInputs.Combat.Attack.WasPerformedThisFrame())
         {
             if (attackCooldownTimer > 0 || isDamaged || isDead) return;
-
+            //playerAudio.PlayOneShot(explodeSound, 1.0f);
+            //playerAudio.PlayOneShot(attackSound,1.0f);
             attackCooldownTimer = attackCooldown;
             EnableAttackArea();
 
